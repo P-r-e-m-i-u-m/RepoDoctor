@@ -27,8 +27,8 @@ func Analyze(root, command, output string) []Diagnosis {
 		for name := range p.NPMScripts {
 			available = append(available, name)
 		}
-		if len(available) > 0 {
-			found = append(found, Diagnosis{"Unknown package script", fmt.Sprintf("Script %q is not declared in package.json. Available scripts: %s.", m[1], strings.Join(available, ", ")), "", "Information only", false})
+		if p.HasPackageJSON {
+			found = append(found, Diagnosis{"Unknown package script", unknownScriptExplanation(m[1], available), "", "Information only", false})
 		}
 	}
 	if m := moduleMissing.FindStringSubmatch(output); len(m) == 2 {
@@ -72,4 +72,11 @@ func Analyze(root, command, output string) []Diagnosis {
 		found = append(found, Diagnosis{"Docker Compose project not detected", "No Compose configuration file was found in " + filepath.Base(root) + ".", "", "Information only", false})
 	}
 	return found
+}
+
+func unknownScriptExplanation(name string, available []string) string {
+	if len(available) == 0 {
+		return fmt.Sprintf("Script %q is not declared in package.json. This project currently has no scripts configured.", name)
+	}
+	return fmt.Sprintf("Script %q is not declared in package.json. Available scripts: %s.", name, strings.Join(available, ", "))
 }
