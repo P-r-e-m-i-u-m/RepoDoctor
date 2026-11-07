@@ -23,6 +23,7 @@ func inspectProjectFiles(root string) Project {
 	}
 	p.HasNodeModules = exists("node_modules")
 	if data, err := os.ReadFile(filepath.Join(root, "package.json")); err == nil {
+		p.HasPackageJSON = true
 		var manifest struct {
 			Scripts map[string]json.RawMessage `json:"scripts"`
 		}
