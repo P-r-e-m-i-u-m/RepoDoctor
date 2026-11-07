@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f0e9">
+  <meta name="description" content="RepoDoctor is a local-first CLI that reads failed developer commands, inspects your repository, and suggests safer next steps.">
+  <meta property="og:title" content="RepoDoctor | Debug with context">
+  <meta property="og:description" content="Understand the error. Find the fix. Stay in control.">
+  <meta property="og:type" content="website">
+  <title>RepoDoctor | Debug with context</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="RepoDoctor home"><span class="brand-mark" aria-hidden="true">R<span>+</span></span><span>REPO<span class="brand-light">DOCTOR</span></span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation"><span></span><span></span></button>
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+      <a href="#how">How it works</a>
+      <a href="#diagnoses">What it checks</a>
+      <a href="#safety">Safety</a>
+      <a class="nav-github" href="https://github.com/P-r-e-m-i-u-m/RepoDoctor" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> LOCAL-FIRST DEVELOPER TOOLING</p>
+        <h1>Debug with<br><span class="headline-mark">context.</span></h1>
+        <p class="hero-lede">A failed command is only half the story. RepoDoctor reads the error, looks at your project, and gives you a fix you can actually understand.</p>
+        <div class="hero-actions">
+          <a class="button button-dark" href="https://github.com/P-r-e-m-i-u-m/RepoDoctor" target="_blank" rel="noreferrer">Explore the repo <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#how">See how it works <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-meta"><span>OPEN SOURCE</span><i></i><span>GO</span><i></i><span>LOCAL BY DEFAULT</span></div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of RepoDoctor analyzing a failed terminal command">
+        <div class="art-topline"><span>DIAGNOSTIC / 001</span><span>REPO STATUS <b>●</b></span></div>
+        <div class="terminal-window">
+          <div class="terminal-bar"><div class="window-dots"><i></i><i></i><i></i></div><span>~/projects/my-app</span><span class="terminal-tag">SHELL</span></div>
+          <div class="terminal-body">
+            <p class="terminal-muted">✦ command failed</p>
+            <p><span class="prompt">$</span> npm run dev</p>
+            <p class="error-line">npm ERR! Missing script: "dev"</p>
+            <div class="scan-line"><span></span> READING PROJECT FILES</div>
+            <div class="diagnosis">
+              <div class="diagnosis-icon">!</div>
+              <div><small>REPO DOCTOR FOUND</small><strong>Unknown package script</strong><p>Checking package.json for available scripts.</p></div>
+            </div>
+            <div class="terminal-foot"><span>ANALYSIS COMPLETE</span><span class="safe-label">NO CHANGES MADE</span></div>
+          </div>
+        </div>
+        <div class="art-stamp">RD<br><span>01</span></div>
+        <div class="art-caption">ERROR IN.<br>CLARITY OUT.</div>
+        <div class="art-cross" aria-hidden="true">✳</div>
+      </div>
+      <div class="hero-bottom"><span>01 / LESS GUESSING</span><span>MORE UNDERSTANDING</span><span>SCROLL TO EXPLORE ↓</span></div>
+    </section>
+
+    <section class="statement" id="how">
+      <div class="section-index">01 / THE IDEA</div>
+      <div class="statement-content"><p class="eyebrow">YOUR REPOSITORY HAS THE CONTEXT</p><h2>Stop debugging<br>in the dark.</h2><p>Most errors make more sense when you know what is actually inside the project. RepoDoctor connects the message in your terminal to the files, scripts, dependencies, and configuration around it.</p></div>
+      <div class="statement-aside"><span class="big-number">01</span><span>ERROR<br>+ CONTEXT<br>= NEXT STEP</span></div>
+    </section>
+
+    <section class="workflow">
+      <div class="section-heading"><div class="section-index">02 / THE WORKFLOW</div><h2>Three steps.<br><span>No black box.</span></h2></div>
+      <div class="steps">
+        <article class="step"><div class="step-number">01</div><div class="step-symbol symbol-red">↳</div><h3>Bring the error</h3><p>Pass the command that failed and its error output. No need to paste your whole project into a chatbot.</p><span class="step-note">INPUT / COMMAND + ERROR</span></article>
+        <article class="step"><div class="step-number">02</div><div class="step-symbol symbol-blue">⌕</div><h3>Inspect the repo</h3><p>RepoDoctor checks relevant project files and configuration to understand what the error is pointing at.</p><span class="step-note">PROCESS / LOCAL ANALYSIS</span></article>
+        <article class="step"><div class="step-number">03</div><div class="step-symbol symbol-yellow">✓</div><h3>Choose the next move</h3><p>Read the explanation, review the suggested command, then decide whether to run it. You stay in control.</p><span class="step-note">OUTPUT / EXPLAINED FIX</span></article>
+      </div>
+    </section>
+
+    <section class="diagnoses-section" id="diagnoses">
+      <div class="diagnoses-intro"><div class="section-index">03 / PROJECT AWARENESS</div><p class="eyebrow">BUILT AROUND REAL WORKFLOWS</p><h2>Different stacks.<br><span>One calm place</span><br>to start.</h2><p>Rule-based checks connect common terminal failures with the project files that can explain them. The project is actively evolving, so coverage will grow.</p></div>
+      <div class="coverage-list">
+        <div class="coverage-row"><span class="coverage-icon">JS</span><div><h3>Node.js</h3><p>Missing dependencies, package manager clues, unknown scripts</p></div><span class="coverage-state">RULES IN CODE</span></div>
+        <div class="coverage-row"><span class="coverage-icon">Py</span><div><h3>Python</h3><p>Missing modules, requirements files, virtual environments</p></div><span class="coverage-state">RULES IN CODE</span></div>
+        <div class="coverage-row"><span class="coverage-icon">▤</span><div><h3>Docker Compose</h3><p>Unknown services and Compose project detection</p></div><span class="coverage-state">RULES IN CODE</span></div>
+        <div class="coverage-row"><span class="coverage-icon">Git</span><div><h3>Git</h3><p>Missing upstream configuration and possible command typos</p></div><span class="coverage-state">RULES IN CODE</span></div>
+        <div class="coverage-row"><span class="coverage-icon">⌘</span><div><h3>Make &amp; environment</h3><p>Unknown targets, missing .env files, port conflicts</p></div><span class="coverage-state">RULES IN CODE</span></div>
+      </div>
+    </section>
+
+    <section class="safety-section" id="safety">
+      <div class="safety-grid">
+        <div><div class="section-index">04 / THE NON-NEGOTIABLES</div><p class="eyebrow">AUTOMATION WITH A BRAKE PEDAL</p><h2>Your repo.<br>Your call.</h2><p class="safety-lede">A helpful fix should never become a surprise change. RepoDoctor is designed to explain first and ask before it acts.</p><a class="text-link dark-link" href="https://github.com/P-r-e-m-i-u-m/RepoDoctor#safety-model" target="_blank" rel="noreferrer">Read the safety model <span aria-hidden="true">↗</span></a></div>
+        <div class="safety-rules">
+          <div><span>01</span><h3>Local by default</h3><p>Analysis happens on your machine. No cloud project upload is required.</p></div>
+          <div><span>02</span><h3>Explain before acting</h3><p>See what RepoDoctor found and why it suggests a particular next step.</p></div>
+          <div><span>03</span><h3>Ask before execution</h3><p>Suggested commands require your confirmation before they run.</p></div>
+          <div><span>04</span><h3>Dangerous stays manual</h3><p>Destructive commands are not automatically executed.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="get-started">
+      <div class="section-index">05 / GET YOUR HANDS DIRTY</div>
+      <div class="get-started-main"><p class="eyebrow">EARLY DEVELOPMENT / OPEN SOURCE</p><h2>Make your next<br>error <span>make sense.</span></h2><p>Clone the project, run the tests, inspect the code, and help shape what RepoDoctor becomes.</p><div class="clone-box"><code id="clone-command">git clone https://github.com/P-r-e-m-i-u-m/RepoDoctor.git</code><button type="button" class="copy-button" id="copy-command" aria-label="Copy clone command">COPY <span aria-hidden="true">▣</span></button></div><div class="clone-note" id="copy-status" aria-live="polite">REQUIRES GO 1.22 OR LATER</div><div class="hero-actions"><a class="button button-dark" href="https://github.com/P-r-e-m-i-u-m/RepoDoctor" target="_blank" rel="noreferrer">View source on GitHub <span aria-hidden="true">↗</span></a><a class="text-link" href="https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues" target="_blank" rel="noreferrer">Find an issue <span aria-hidden="true">↗</span></a></div></div>
+      <div class="get-started-mark" aria-hidden="true"><div>RD</div><span>OPEN<br>SOURCE<br>TOOLING</span></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-mark">R<span>+</span></span><span>REPO<span class="brand-light">DOCTOR</span></span></a><p>Understand the error. Find the fix. Stay in control.</p><div><a href="https://github.com/P-r-e-m-i-u-m/RepoDoctor" target="_blank" rel="noreferrer">GitHub ↗</a><span>MIT LICENSE</span><span>BUILT IN THE OPEN</span></div><small>© <span id="year"></span> RepoDoctor. An independent open-source project.</small></footer>
+</body>
+</html>
