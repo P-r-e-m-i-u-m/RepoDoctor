@@ -87,16 +87,30 @@ func Execute() {
 		os.Exit(1)
 	}
 }
-func confirm() bool {
+func confirm(command string) (string, bool, bool) {
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Run this command? [y]es / [n]o / [e]dit: ")
-	line, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+	line, _ := reader.ReadString('\\n')
 	switch strings.ToLower(strings.TrimSpace(line)) {
 	case "y", "yes":
-		return true
+		return command, true, false
+	case "e", "edit":
+		fmt.Print("New command: ")
+		edited, err := reader.ReadString('\\n')
+		edited = strings.TrimSpace(edited)
+		if err != nil && edited == "" {
+			return command, false, false
+		}
+		if edited == "" {
+			fmt.Println("  Empty command. Skipped.")
+			return command, false, false
+		}
+		return edited, true, true
 	default:
-		return false
+		return command, false, false
 	}
 }
+
 func runSuggested(dir, command string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
