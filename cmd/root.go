@@ -53,7 +53,7 @@ var rootCmd = &cobra.Command{
 				var edited bool
 				suggested, approved, edited = confirm(suggested)
 				if edited {
-					fmt.Printf("  Updated command: %s\\n", suggested)
+					fmt.Printf("  Updated command: %s\n", suggested)
 				}
 			}
 			if !approved {
@@ -90,13 +90,13 @@ func Execute() {
 func confirm(command string) (string, bool, bool) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Run this command? [y]es / [n]o / [e]dit: ")
-	line, _ := reader.ReadString('\\n')
+	line, _ := reader.ReadString('\n')
 	switch strings.ToLower(strings.TrimSpace(line)) {
 	case "y", "yes":
 		return command, true, false
 	case "e", "edit":
 		fmt.Print("New command: ")
-		edited, err := reader.ReadString('\\n')
+		edited, err := reader.ReadString('\n')
 		edited = strings.TrimSpace(edited)
 		if err != nil && edited == "" {
 			return command, false, false
