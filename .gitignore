@@ -1,0 +1,8 @@
+/repodoctor
+/repodoctor.exe
+/dist/
+*.db
+*.db-shm
+*.db-wal
+.env
+/vendor/
