@@ -11,6 +11,7 @@ type Diagnosis struct {
 type Project struct {
 	PackageManager  string
 	HasNodeModules  bool
+	HasPackageJSON  bool
 	NPMScripts      map[string]bool
 	HasRequirements bool
 	Requirements    map[string]bool
