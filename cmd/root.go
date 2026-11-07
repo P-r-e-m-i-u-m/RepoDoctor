@@ -47,20 +47,29 @@ var rootCmd = &cobra.Command{
 				fmt.Println("  Manual review only. RepoDoctor will not execute this command.")
 				continue
 			}
+			suggested := item.Command
 			approved := autoApprove
 			if !approved {
-				approved = confirm()
+				var edited bool
+				suggested, approved, edited = confirm(suggested)
+				if edited {
+					fmt.Printf("  Updated command: %s\\n", suggested)
+				}
 			}
 			if !approved {
 				fmt.Println("  Skipped.")
 				continue
 			}
-			if err := runSuggested(abs, item.Command); err != nil {
+			if doctor.IsDestructive(suggested) {
+				fmt.Println("  That command matches a destructive-command safety rule. RepoDoctor will not run it.")
+				continue
+			}
+			if err := runSuggested(abs, suggested); err != nil {
 				fmt.Printf("  Command failed: %v\n", err)
 				continue
 			}
 			fmt.Println("  Command completed.")
-			recordFix(item.Title, item.Command)
+			recordFix(item.Title, suggested)
 		}
 		return nil
 	},
