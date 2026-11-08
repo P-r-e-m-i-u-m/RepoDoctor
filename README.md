@@ -103,13 +103,20 @@ The goal is simple: make the next step after a failed command less frustrating.
 
 ## Want to help?
 
-RepoDoctor is young, which means useful contributions can make a real difference.
+RepoDoctor is young, and there is plenty of room to shape it. You do not need to be a Go expert to make a useful contribution. A good bug report, a real-world error example, or a regression test can be just as valuable as a new feature.
 
-- Found a failure it should understand? [Open an issue](https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues/new).
-- Want to add a diagnosis? Open an issue first or send a pull request.
-- Not sure where to start? Browse [open issues](https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues).
+**A few good places to jump in:**
 
-Small, focused contributions are very welcome: a realistic error fixture, a regression test, a clearer explanation, or a fix for an edge case.
+- [Browse the open issues](https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues).
+- [Pick a feature or bug to work on](https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues?q=is%3Aissue+is%3Aopen).
+- [Read the contribution guide](CONTRIBUTING.md) before opening a PR.
+- [Report a bug or suggest an idea](https://github.com/P-r-e-m-i-u-m/RepoDoctor/issues/new/choose).
+
+If you want to take an issue, leave a comment saying which part you plan to handle. That gives everyone a chance to coordinate before work overlaps. If an issue feels too large, suggest a smaller first slice in the comments.
+
+We aim to review focused PRs quickly. Please include tests and run the checks listed in the contribution guide. Green checks and a clear diff make it much easier to get your work reviewed and merged.
+
+First contribution? That's welcome too. Ask questions in the issue instead of getting stuck guessing.
 
 ## License
 
