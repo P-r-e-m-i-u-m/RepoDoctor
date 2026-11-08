@@ -15,8 +15,14 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      - name: Format Go sources
-        run: gofmt -w $(find . -name '*.go')
+      - name: Check Go formatting
+        run: |
+          files=$(gofmt -l $(find . -name '*.go'))
+          if [ -n "$files" ]; then
+            echo "These Go files need gofmt:"
+            echo "$files"
+            exit 1
+          fi
       - name: Test
         run: go test -race ./...
       - name: Vet
