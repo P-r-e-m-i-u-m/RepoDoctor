@@ -2,8 +2,8 @@ package doctor
 
 import (
 	"os"
-	"strings"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -68,5 +68,34 @@ func TestUnknownScriptListsAvailableScripts(t *testing.T) {
 	got := Analyze(root, "npm run dev", "npm ERR! Missing script: \"dev\"")
 	if len(got) != 1 || !strings.Contains(got[0].Explanation, "start") {
 		t.Fatalf("unexpected diagnosis: %#v", got)
+	}
+}
+
+func TestAdditionalDestructiveCommandsAreDetected(t *testing.T) {
+	for _, command := range []string{
+		"git clean -fd",
+		"git clean -xdf",
+		"git clean --force",
+		"docker compose down --volumes",
+		"docker-compose down -v",
+		"Remove-Item -Recurse -Force .\\build",
+		"Remove-Item -Force -Recurse .\\build",
+	} {
+		if !IsDestructive(command) {
+			t.Errorf("expected %q to be blocked", command)
+		}
+	}
+}
+
+func TestAdditionalSafeCommandsAreNotDestructive(t *testing.T) {
+	for _, command := range []string{
+		"git clean -n",
+		"docker compose down",
+		"docker compose ps",
+		"Remove-Item .\\one-file.txt",
+	} {
+		if IsDestructive(command) {
+			t.Errorf("expected %q to remain allowed", command)
+		}
 	}
 }
