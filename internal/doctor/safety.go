@@ -12,6 +12,10 @@ var blockedPatterns = []*regexp.Regexp{
 	regexp.MustCompile("(?i)\\b(drop|truncate)\\s+(database|table)\\b"),
 	regexp.MustCompile("(?i)\\bdel\\s+/[fq]\\b"),
 	regexp.MustCompile("(?i)\\brmdir\\s+/s\\b"),
+	regexp.MustCompile("(?i)\\bgit\\s+clean\\b[^\\n]*(?:-[a-z]*f[a-z]*(?:\\s|$)|--force\\b)"),
+	regexp.MustCompile("(?i)\\bdocker(?:-compose|\\s+compose)\\s+down\\b[^\\n]*(?:--volumes\\b|-v\\b)"),
+	regexp.MustCompile("(?i)\\bremove-item\\b[^\\n]*-recurse\\b[^\\n]*-force\\b"),
+	regexp.MustCompile("(?i)\\bremove-item\\b[^\\n]*-force\\b[^\\n]*-recurse\\b"),
 }
 
 func IsDestructive(command string) bool {
