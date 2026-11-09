@@ -99,3 +99,28 @@ func TestAdditionalSafeCommandsAreNotDestructive(t *testing.T) {
 		}
 	}
 }
+
+func TestGitPushForceShorthandIsDetected(t *testing.T) {
+	for _, command := range []string{
+		"git push -f origin main",
+		"git push origin main -f",
+		"git push -uf origin main",
+		"git push origin main -fu",
+	} {
+		if !IsDestructive(command) {
+			t.Errorf("expected %q to be blocked", command)
+		}
+	}
+}
+
+func TestOrdinaryGitPushIsNotDestructive(t *testing.T) {
+	for _, command := range []string{
+		"git push",
+		"git push origin main",
+		"git push --set-upstream origin feature",
+	} {
+		if IsDestructive(command) {
+			t.Errorf("expected %q to remain allowed", command)
+		}
+	}
+}
