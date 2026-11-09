@@ -56,7 +56,7 @@ func TestSafeCommandIsNotDestructive(t *testing.T) {
 func TestUnknownScriptDiagnosedWhenPackageHasNoScripts(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, root, "package.json", "{\"name\":\"sample\",\"version\":\"1.0.0\"}")
-	got := Analyze(root, "npm run dev", "npm ERR! Missing script: \\\"dev\\\"")
+	got := Analyze(root, "npm run dev", "npm ERR! Missing script: \"dev\"")
 	if len(got) != 1 || got[0].Title != "Unknown package script" || !strings.Contains(got[0].Explanation, "no scripts configured") {
 		t.Fatalf("unexpected diagnosis: %#v", got)
 	}
@@ -65,7 +65,7 @@ func TestUnknownScriptDiagnosedWhenPackageHasNoScripts(t *testing.T) {
 func TestUnknownScriptListsAvailableScripts(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, root, "package.json", "{\"scripts\":{\"start\":\"node app.js\"}}")
-	got := Analyze(root, "npm run dev", "npm ERR! Missing script: \\\"dev\\\"")
+	got := Analyze(root, "npm run dev", "npm ERR! Missing script: \"dev\"")
 	if len(got) != 1 || !strings.Contains(got[0].Explanation, "start") {
 		t.Fatalf("unexpected diagnosis: %#v", got)
 	}
