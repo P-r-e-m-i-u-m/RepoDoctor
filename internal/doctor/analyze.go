@@ -32,11 +32,13 @@ func Analyze(root, command, output string) []Diagnosis {
 		}
 	}
 	if m := moduleMissing.FindStringSubmatch(output); len(m) == 2 {
-		name := strings.ToLower(strings.ReplaceAll(m[1], "-", "_"))
+		name := normalizePythonName(m[1])
 		if p.Requirements[name] {
-			found = append(found, Diagnosis{"Python dependency is missing", fmt.Sprintf("%q is declared in requirements but is unavailable in the active environment.", m[1]), "python -m pip install -r requirements.txt", "Safe after confirmation", false})
+			found = append(found, Diagnosis{"Python dependency is missing", pythonDependencyExplanation(m[1], p.PythonSources[name]), p.PythonInstallCommand[name], "Safe after confirmation", false})
+		} else if len(p.PythonMetadataError) > 0 {
+			found = append(found, Diagnosis{"Python dependency metadata could not be read", fmt.Sprintf("Python cannot import %q. RepoDoctor could not parse %s, so it cannot safely determine whether the dependency is declared.", m[1], strings.Join(p.PythonMetadataError, " and ")), "", "Manual review required", true})
 		} else {
-			found = append(found, Diagnosis{"Python module is missing", fmt.Sprintf("Python cannot import %q, and it was not found in the inspected requirements files.", m[1]), "", "Manual review required", true})
+			found = append(found, Diagnosis{"Python module is missing", fmt.Sprintf("Python cannot import %q, and it was not found in the inspected requirements.txt, requirements-dev.txt, pyproject.toml, or Pipfile files. Import names can differ from package names, so verify the distribution name before installing anything.", m[1]), "", "Manual review required", true})
 		}
 	}
 	if strings.Contains(out, "no such file or directory") && (strings.Contains(out, ".venv") || strings.Contains(out, "activate")) && !p.HasVenv {
