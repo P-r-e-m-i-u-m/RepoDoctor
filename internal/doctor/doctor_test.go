@@ -145,7 +145,11 @@ networks:
 `
 
 	want := []string{"api", "worker"}
-	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+	got, err := parseComposeServices(contents)
+	if err != nil {
+		t.Fatalf("parseComposeServices() returned error: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
 	}
 }
@@ -161,7 +165,11 @@ networks:
 `
 
 	want := []string{"web"}
-	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+	got, err := parseComposeServices(contents)
+	if err != nil {
+		t.Fatalf("parseComposeServices() returned error: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
 	}
 }
@@ -175,7 +183,27 @@ func TestParseComposeServicesSupportsQuotedServiceNames(t *testing.T) {
 `
 
 	want := []string{"web", "worker"}
-	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+	got, err := parseComposeServices(contents)
+	if err != nil {
+		t.Fatalf("parseComposeServices() returned error: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
+	}
+}
+
+func TestParseComposeServicesRejectsMalformedYAML(t *testing.T) {
+	contents := "services:\n  web:\n    image: nginx\n  worker\n    image: example/worker\n"
+	if _, err := parseComposeServices(contents); err == nil {
+		t.Fatal("expected malformed YAML to return an error")
+	}
+}
+
+func TestMalformedComposeFileProducesUsefulDiagnosis(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "compose.yaml", "services:\n  web:\n    image: nginx\n  worker\n    image: example/worker\n")
+	got := Analyze(root, "docker compose up missing", "no such service: missing")
+	if len(got) != 1 || got[0].Title != "Docker Compose file could not be parsed" || !strings.Contains(got[0].Explanation, "Fix the YAML syntax") {
+		t.Fatalf("unexpected diagnosis: %#v", got)
 	}
 }
