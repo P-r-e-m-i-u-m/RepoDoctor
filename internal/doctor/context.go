@@ -40,7 +40,11 @@ func inspectProjectFiles(root string) Project {
 	for _, name := range []string{"compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"} {
 		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
 			p.HasCompose = true
-			p.ComposeServices, p.ComposeError = parseComposeServices(string(data))
+			services, parseErr := parseComposeServices(string(data))
+			p.ComposeServices = services
+			if parseErr != nil {
+				p.ComposeError = parseErr.Error()
+			}
 			break
 		}
 	}
