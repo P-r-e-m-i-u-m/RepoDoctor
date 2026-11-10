@@ -9,7 +9,6 @@ import (
 )
 
 var makeTarget = regexp.MustCompile("^([A-Za-z0-9_.-]+):")
-var composeService = regexp.MustCompile("^  ([A-Za-z0-9_.-]+):\\s*$")
 
 func inspectProjectFiles(root string) Project {
 	p := Project{NPMScripts: map[string]bool{}, Requirements: map[string]bool{}}
@@ -52,11 +51,7 @@ func inspectProjectFiles(root string) Project {
 	for _, name := range []string{"compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"} {
 		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
 			p.HasCompose = true
-			for _, line := range strings.Split(string(data), "\n") {
-				if m := composeService.FindStringSubmatch(line); len(m) == 2 && m[1] != "services" {
-					p.ComposeServices = append(p.ComposeServices, m[1])
-				}
-			}
+			p.ComposeServices = parseComposeServices(string(data))
 			break
 		}
 	}
@@ -71,4 +66,52 @@ func inspectProjectFiles(root string) Project {
 	p.HasEnvFile = exists(".env")
 	p.GitBranch, p.HasGitRemote = gitInfo(root)
 	return p
+}
+
+// parseComposeServices reads service keys only from the top-level services
+// mapping. It supports ordinary block-style Compose YAML with arbitrary
+// indentation; it is intentionally not a general-purpose YAML validator.
+func parseComposeServices(contents string) []string {
+	servicesIndent := -1
+	serviceIndent := -1
+	inServices := false
+	var services []string
+
+	for _, line := range strings.Split(contents, "\n") {
+		if strings.TrimSpace(line) == "" || strings.HasPrefix(strings.TrimSpace(line), "#") {
+			continue
+		}
+
+		indent := len(line) - len(strings.TrimLeft(line, " "))
+		if strings.HasPrefix(strings.TrimLeft(line, " "), "\t") {
+			continue
+		}
+		entry := strings.TrimSpace(line)
+		key, _, hasValue := strings.Cut(entry, ":")
+		if !hasValue {
+			continue
+		}
+		key = strings.TrimSpace(key)
+		key = strings.Trim(key, "\"'")
+
+		if !inServices {
+			if indent == 0 && key == "services" {
+				inServices = true
+				servicesIndent = indent
+			}
+			continue
+		}
+
+		if indent <= servicesIndent {
+			break
+		}
+		if serviceIndent == -1 {
+			serviceIndent = indent
+		}
+		if indent == serviceIndent && key != "" {
+			services = append(services, key)
+		}
+	}
+
+	return services
 }
