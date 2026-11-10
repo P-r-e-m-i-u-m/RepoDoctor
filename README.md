@@ -62,7 +62,7 @@ The current rule-based engine includes checks for these situations:
 | Project area | Examples |
 | --- | --- |
 | Node.js | Missing dependencies, unknown scripts, package-manager clues |
-| Python | Missing imports, declared requirements, missing virtual environments |
+| Python | Missing imports, requirements.txt, PEP 621 and Poetry pyproject.toml dependencies, Pipfile packages, missing virtual environments |
 | Docker Compose | Unknown services and Compose project detection |
 | Git | Missing upstream configuration, possible command typos |
 | Make | Unknown targets |
