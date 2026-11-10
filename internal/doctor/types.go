@@ -14,7 +14,10 @@ type Project struct {
 	HasPackageJSON  bool
 	NPMScripts      map[string]bool
 	HasRequirements bool
-	Requirements    map[string]bool
+	Requirements         map[string]bool
+	PythonInstallCommand map[string]string
+	PythonSources        map[string]string
+	PythonMetadataError  []string
 	HasVenv         bool
 	HasCompose      bool
 	ComposeServices []string
