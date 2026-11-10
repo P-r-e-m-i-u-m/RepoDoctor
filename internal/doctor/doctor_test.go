@@ -3,6 +3,7 @@ package doctor
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -122,5 +123,59 @@ func TestOrdinaryGitPushIsNotDestructive(t *testing.T) {
 		if IsDestructive(command) {
 			t.Errorf("expected %q to remain allowed", command)
 		}
+	}
+}
+
+func TestParseComposeServicesWithArbitraryIndentationAndComments(t *testing.T) {
+	contents := `name: demo
+services:
+    # App services
+    api:
+        image: example/api
+        environment:
+            MODE: test
+    worker: # background worker
+        image: example/worker
+volumes:
+    data:
+        driver: local
+networks:
+    internal:
+        driver: bridge
+`
+
+	want := []string{"api", "worker"}
+	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
+	}
+}
+
+func TestParseComposeServicesDoesNotTreatOtherTopLevelKeysAsServices(t *testing.T) {
+	contents := `services:
+  web:
+    image: nginx
+volumes:
+  cache:
+networks:
+  backend:
+`
+
+	want := []string{"web"}
+	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
+	}
+}
+
+func TestParseComposeServicesSupportsQuotedServiceNames(t *testing.T) {
+	contents := `services:
+  "web":
+    image: nginx
+  'worker':
+    image: example/worker
+`
+
+	want := []string{"web", "worker"}
+	if got := parseComposeServices(contents); !reflect.DeepEqual(got, want) {
+		t.Fatalf("parseComposeServices() = %#v, want %#v", got, want)
 	}
 }
