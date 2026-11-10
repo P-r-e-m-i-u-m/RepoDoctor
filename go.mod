@@ -3,6 +3,7 @@ module github.com/P-r-e-m-i-u-m/RepoDoctor
 go 1.22
 
 require (
+	github.com/pelletier/go-toml/v2 v2.2.3
 	github.com/spf13/cobra v1.9.1
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.34.5
