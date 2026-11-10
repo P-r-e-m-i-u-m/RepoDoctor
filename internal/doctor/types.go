@@ -18,13 +18,13 @@ type Project struct {
 	PythonInstallCommand map[string]string
 	PythonSources        map[string]string
 	PythonMetadataError  []string
-	HasVenv         bool
-	HasCompose      bool
-	ComposeServices []string
-	ComposeError    string
-	MakeTargets     []string
-	GitBranch       string
-	HasGitRemote    bool
-	HasEnvExample   bool
-	HasEnvFile      bool
+	HasVenv              bool
+	HasCompose           bool
+	ComposeServices      []string
+	ComposeError         string
+	MakeTargets          []string
+	GitBranch            string
+	HasGitRemote         bool
+	HasEnvExample        bool
+	HasEnvFile           bool
 }
