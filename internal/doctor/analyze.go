@@ -50,7 +50,11 @@ func Analyze(root, command, output string) []Diagnosis {
 		found = append(found, Diagnosis{"Environment file is missing", "A sample environment file exists. Copy it, then fill in the required values.", cp, "Creates a local config file. Review values before use.", false})
 	}
 	if m := serviceMissing.FindStringSubmatch(output); len(m) == 2 && p.HasCompose {
-		found = append(found, Diagnosis{"Docker Compose service was not found", fmt.Sprintf("Unknown service %q. Services detected: %s.", m[1], strings.Join(p.ComposeServices, ", ")), "", "Information only", false})
+		if p.ComposeError != "" {
+			found = append(found, Diagnosis{"Docker Compose file could not be parsed", fmt.Sprintf("RepoDoctor could not read the Compose service list: %v. Fix the YAML syntax and run the diagnosis again.", p.ComposeError), "", "Information only", false})
+		} else {
+			found = append(found, Diagnosis{"Docker Compose service was not found", fmt.Sprintf("Unknown service %q. Services detected: %s.", m[1], strings.Join(p.ComposeServices, ", ")), "", "Information only", false})
+		}
 	}
 	if strings.Contains(out, "address already in use") || strings.Contains(out, "eaddrinuse") {
 		found = append(found, Diagnosis{"Port is already in use", "Another process is listening on the requested port. Identify it and stop it manually, or configure the app to use another port.", "", "Manual review required", true})
