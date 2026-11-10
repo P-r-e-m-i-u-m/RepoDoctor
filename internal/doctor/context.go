@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -83,5 +84,6 @@ func parseComposeServices(contents string) ([]string, error) {
 	for name := range document.Services {
 		services = append(services, name)
 	}
+	sort.Strings(services)
 	return services, nil
 }
