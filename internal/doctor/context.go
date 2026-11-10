@@ -35,6 +35,7 @@ func inspectProjectFiles(root string) Project {
 			}
 		}
 	}
+	/* Python dependency files are inspected by inspectPythonDependencies.
 	for _, name := range []string{"requirements.txt", "requirements-dev.txt"} {
 		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
 			p.HasRequirements = true
@@ -50,6 +51,8 @@ func inspectProjectFiles(root string) Project {
 			}
 		}
 	}
+	*/
+	inspectPythonDependencies(root, &p)
 	p.HasVenv = exists(".venv") || exists("venv")
 	for _, name := range []string{"compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"} {
 		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
