@@ -207,3 +207,42 @@ func TestMalformedComposeFileProducesUsefulDiagnosis(t *testing.T) {
 		t.Fatalf("unexpected diagnosis: %#v", got)
 	}
 }
+
+func TestPythonProjectMetadataDependencyFormats(t *testing.T) {
+	tests := []struct {
+		name, file, contents, importName, wantCommand string
+	}{
+		{"PEP 621", "pyproject.toml", "[project]\nname = \"demo\"\ndependencies = [\"fastapi>=0.1\"]\n", "fastapi", "python -m pip install ."},
+		{"Poetry", "pyproject.toml", "[tool.poetry]\nname = \"demo\"\n[tool.poetry.dependencies]\npython = \"^3.12\"\nhttpx = \"^0.27\"\n", "httpx", "poetry install"},
+		{"Poetry group", "pyproject.toml", "[tool.poetry.group.dev.dependencies]\npytest = \"^8.0\"\n", "pytest", "poetry install"},
+		{"Pipfile", "Pipfile", "[packages]\nrequests = \"*\"\n", "requests", "pipenv install"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+			writeFile(t, root, tt.file, tt.contents)
+			got := Analyze(root, "python app.py", "ModuleNotFoundError: No module named '"+tt.importName+"'")
+			if len(got) != 1 || got[0].Command != tt.wantCommand || !strings.Contains(got[0].Explanation, tt.file) {
+				t.Fatalf("unexpected diagnosis: %#v", got)
+			}
+		})
+	}
+}
+
+func TestMalformedPythonMetadataDoesNotGuessInstallCommand(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "pyproject.toml", "[project\ndependencies = [\"requests\"]")
+	got := Analyze(root, "python app.py", "ModuleNotFoundError: No module named 'requests'")
+	if len(got) != 1 || !got[0].ManualOnly || got[0].Command != "" || !strings.Contains(got[0].Explanation, "pyproject.toml") {
+		t.Fatalf("unexpected diagnosis: %#v", got)
+	}
+}
+
+func TestRequirementsDevUsesMatchingInstallFile(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "requirements-dev.txt", "pytest>=8\n")
+	got := Analyze(root, "python -m pytest", "ModuleNotFoundError: No module named 'pytest'")
+	if len(got) != 1 || got[0].Command != "python -m pip install -r requirements-dev.txt" {
+		t.Fatalf("unexpected diagnosis: %#v", got)
+	}
+}
