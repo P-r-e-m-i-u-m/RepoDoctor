@@ -9,11 +9,11 @@ type Diagnosis struct {
 }
 
 type Project struct {
-	PackageManager  string
-	HasNodeModules  bool
-	HasPackageJSON  bool
-	NPMScripts      map[string]bool
-	HasRequirements bool
+	PackageManager       string
+	HasNodeModules       bool
+	HasPackageJSON       bool
+	NPMScripts           map[string]bool
+	HasRequirements      bool
 	Requirements         map[string]bool
 	PythonInstallCommand map[string]string
 	PythonSources        map[string]string
