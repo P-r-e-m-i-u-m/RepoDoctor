@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 var makeTarget = regexp.MustCompile("^([A-Za-z0-9_.-]+):")
@@ -51,7 +53,7 @@ func inspectProjectFiles(root string) Project {
 	for _, name := range []string{"compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"} {
 		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
 			p.HasCompose = true
-			p.ComposeServices = parseComposeServices(string(data))
+			p.ComposeServices, p.ComposeError = parseComposeServices(string(data))
 			break
 		}
 	}
@@ -68,50 +70,18 @@ func inspectProjectFiles(root string) Project {
 	return p
 }
 
-// parseComposeServices reads service keys only from the top-level services
-// mapping. It supports ordinary block-style Compose YAML with arbitrary
-// indentation; it is intentionally not a general-purpose YAML validator.
-func parseComposeServices(contents string) []string {
-	servicesIndent := -1
-	serviceIndent := -1
-	inServices := false
-	var services []string
-
-	for _, line := range strings.Split(contents, "\n") {
-		if strings.TrimSpace(line) == "" || strings.HasPrefix(strings.TrimSpace(line), "#") {
-			continue
-		}
-
-		indent := len(line) - len(strings.TrimLeft(line, " "))
-		if strings.HasPrefix(strings.TrimLeft(line, " "), "\t") {
-			continue
-		}
-		entry := strings.TrimSpace(line)
-		key, _, hasValue := strings.Cut(entry, ":")
-		if !hasValue {
-			continue
-		}
-		key = strings.TrimSpace(key)
-		key = strings.Trim(key, "\"'")
-
-		if !inServices {
-			if indent == 0 && key == "services" {
-				inServices = true
-				servicesIndent = indent
-			}
-			continue
-		}
-
-		if indent <= servicesIndent {
-			break
-		}
-		if serviceIndent == -1 {
-			serviceIndent = indent
-		}
-		if indent == serviceIndent && key != "" {
-			services = append(services, key)
-		}
+// parseComposeServices decodes Compose YAML and reads only the top-level
+// services mapping. YAML syntax errors are returned to the caller.
+func parseComposeServices(contents string) ([]string, error) {
+	var document struct {
+		Services map[string]yaml.Node `yaml:"services"`
 	}
-
-	return services
+	if err := yaml.Unmarshal([]byte(contents), &document); err != nil {
+		return nil, err
+	}
+	services := make([]string, 0, len(document.Services))
+	for name := range document.Services {
+		services = append(services, name)
+	}
+	return services, nil
 }
