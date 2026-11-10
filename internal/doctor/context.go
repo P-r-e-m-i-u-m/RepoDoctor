@@ -35,23 +35,6 @@ func inspectProjectFiles(root string) Project {
 			}
 		}
 	}
-	/* Python dependency files are inspected by inspectPythonDependencies.
-	for _, name := range []string{"requirements.txt", "requirements-dev.txt"} {
-		if data, err := os.ReadFile(filepath.Join(root, name)); err == nil {
-			p.HasRequirements = true
-			for _, line := range strings.Split(string(data), "\n") {
-				line = strings.TrimSpace(line)
-				if line == "" || strings.HasPrefix(line, "#") {
-					continue
-				}
-				parts := strings.FieldsFunc(line, func(r rune) bool { return r == '=' || r == '<' || r == '>' || r == '[' || r == ';' })
-				if len(parts) > 0 {
-					p.Requirements[strings.ToLower(strings.ReplaceAll(parts[0], "-", "_"))] = true
-				}
-			}
-		}
-	}
-	*/
 	inspectPythonDependencies(root, &p)
 	p.HasVenv = exists(".venv") || exists("venv")
 	for _, name := range []string{"compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"} {
