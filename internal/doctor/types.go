@@ -18,6 +18,7 @@ type Project struct {
 	HasVenv         bool
 	HasCompose      bool
 	ComposeServices []string
+	ComposeError    string
 	MakeTargets     []string
 	GitBranch       string
 	HasGitRemote    bool
