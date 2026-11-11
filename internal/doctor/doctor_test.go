@@ -246,3 +246,16 @@ func TestRequirementsDevUsesMatchingInstallFile(t *testing.T) {
 		t.Fatalf("unexpected diagnosis: %#v", got)
 	}
 }
+
+func TestUnknownScriptListsAvailableScriptsDeterministically(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "package.json", "{\"scripts\":{\"test\":\"vitest\",\"build\":\"vite build\",\"dev\":\"vite\"}}")
+	got := Analyze(root, "npm run start", "npm ERR! Missing script: \"start\"")
+	if len(got) != 1 {
+		t.Fatalf("expected one diagnosis, got %#v", got)
+	}
+	want := "Script \"start\" is not declared in package.json. Available scripts: build, dev, test."
+	if got[0].Explanation != want {
+		t.Fatalf("unexpected explanation: %q, want %q", got[0].Explanation, want)
+	}
+}
