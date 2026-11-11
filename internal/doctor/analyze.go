@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -47,9 +48,13 @@ func Analyze(root, command, output string) []Diagnosis {
 		found = append(found, Diagnosis{"Python virtual environment is missing", "No .venv or venv directory was found.", "python -m venv .venv", "Safe after confirmation", false})
 	}
 	if strings.Contains(out, "no such file or directory") && strings.Contains(out, ".env") && !p.HasEnvFile && p.HasEnvExample {
-		cp := "cp .env.example .env"
+		exampleFile := ".env.example"
+		if _, err := os.Stat(filepath.Join(root, exampleFile)); err != nil {
+			exampleFile = ".env.sample"
+		}
+		cp := "cp " + exampleFile + " .env"
 		if isWindows() {
-			cp = "Copy-Item .env.example .env"
+			cp = "Copy-Item " + exampleFile + " .env"
 		}
 		found = append(found, Diagnosis{"Environment file is missing", "A sample environment file exists. Copy it, then fill in the required values.", cp, "Creates a local config file. Review values before use.", false})
 	}
