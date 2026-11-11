@@ -259,3 +259,22 @@ func TestUnknownScriptListsAvailableScriptsDeterministically(t *testing.T) {
 		t.Fatalf("unexpected explanation: %q, want %q", got[0].Explanation, want)
 	}
 }
+
+func TestMissingEnvFileUsesDetectedSampleFilename(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, ".env.sample", "API_KEY=replace-me\n")
+	got := Analyze(root, "npm run dev", "ENOENT: no such file or directory .env")
+	if len(got) != 1 || !strings.Contains(got[0].Command, ".env.sample") || strings.Contains(got[0].Command, ".env.example") {
+		t.Fatalf("expected command to copy .env.sample, got %#v", got)
+	}
+}
+
+func TestMissingEnvFilePrefersEnvExampleWhenBothSamplesExist(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, ".env.sample", "API_KEY=sample\n")
+	writeFile(t, root, ".env.example", "API_KEY=example\n")
+	got := Analyze(root, "npm run dev", "ENOENT: no such file or directory .env")
+	if len(got) != 1 || !strings.Contains(got[0].Command, ".env.example") {
+		t.Fatalf("expected command to prefer .env.example, got %#v", got)
+	}
+}
