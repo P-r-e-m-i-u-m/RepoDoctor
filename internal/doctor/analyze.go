@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -27,6 +28,7 @@ func Analyze(root, command, output string) []Diagnosis {
 		for name := range p.NPMScripts {
 			available = append(available, name)
 		}
+		sort.Strings(available)
 		if p.HasPackageJSON {
 			found = append(found, Diagnosis{"Unknown package script", unknownScriptExplanation(m[1], available), "", "Information only", false})
 		}
