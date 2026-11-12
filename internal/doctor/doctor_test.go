@@ -278,3 +278,48 @@ func TestMissingEnvFilePrefersEnvExampleWhenBothSamplesExist(t *testing.T) {
 		t.Fatalf("expected command to prefer .env.example, got %#v", got)
 	}
 }
+
+func TestPackageManagerFieldOverridesSingleLockfile(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "package.json", "{\"packageManager\":\"pnpm@9.0.0\"}")
+	writeFile(t, root, "pnpm-lock.yaml", "lockfileVersion: '9.0'")
+	got := Analyze(root, "pnpm dev", "ENOENT: no such file or directory, node_modules")
+	if len(got) != 1 || got[0].Command != "pnpm install" {
+		t.Fatalf("expected declared pnpm manager, got %#v", got)
+	}
+}
+
+func TestPackageManagerFieldDetectsConflictingLockfile(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "package.json", "{\"packageManager\":\"pnpm@9.0.0\"}")
+	writeFile(t, root, "pnpm-lock.yaml", "lockfileVersion: '9.0'")
+	writeFile(t, root, "package-lock.json", "{}")
+	got := Analyze(root, "pnpm dev", "ENOENT: no such file or directory, node_modules")
+	if len(got) != 1 || !got[0].ManualOnly || got[0].Command != "" || !strings.Contains(got[0].Explanation, "also contains a npm lockfile") {
+		t.Fatalf("expected package-manager conflict diagnosis, got %#v", got)
+	}
+}
+
+func TestMultipleLockfilesWithoutDeclarationDoNotGuess(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, root, "package.json", "{}")
+	writeFile(t, root, "pnpm-lock.yaml", "lockfileVersion: '9.0'")
+	writeFile(t, root, "yarn.lock", "# yarn lockfile")
+	got := Analyze(root, "npm run dev", "ENOENT: no such file or directory, node_modules")
+	if len(got) != 1 || !got[0].ManualOnly || got[0].Command != "" || !strings.Contains(got[0].Explanation, "multiple package-manager lockfiles") {
+		t.Fatalf("expected ambiguous package-manager diagnosis, got %#v", got)
+	}
+}
+
+func TestPackageManagerFieldSupportsYarnAndNPM(t *testing.T) {
+	for _, manager := range []string{"yarn", "npm"} {
+		t.Run(manager, func(t *testing.T) {
+			root := t.TempDir()
+			writeFile(t, root, "package.json", "{\"packageManager\":\""+manager+"@10.0.0\"}")
+			got := Analyze(root, "npm run dev", "ENOENT: no such file or directory, node_modules")
+			if len(got) != 1 || got[0].Command != manager+" install" {
+				t.Fatalf("expected %s install, got %#v", manager, got)
+			}
+		})
+	}
+}

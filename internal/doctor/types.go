@@ -9,22 +9,23 @@ type Diagnosis struct {
 }
 
 type Project struct {
-	PackageManager       string
-	HasNodeModules       bool
-	HasPackageJSON       bool
-	NPMScripts           map[string]bool
-	HasRequirements      bool
-	Requirements         map[string]bool
-	PythonInstallCommand map[string]string
-	PythonSources        map[string]string
-	PythonMetadataError  []string
-	HasVenv              bool
-	HasCompose           bool
-	ComposeServices      []string
-	ComposeError         string
-	MakeTargets          []string
-	GitBranch            string
-	HasGitRemote         bool
-	HasEnvExample        bool
-	HasEnvFile           bool
+	PackageManager         string
+	PackageManagerConflict string
+	HasNodeModules         bool
+	HasPackageJSON         bool
+	NPMScripts             map[string]bool
+	HasRequirements        bool
+	Requirements           map[string]bool
+	PythonInstallCommand   map[string]string
+	PythonSources          map[string]string
+	PythonMetadataError    []string
+	HasVenv                bool
+	HasCompose             bool
+	ComposeServices        []string
+	ComposeError           string
+	MakeTargets            []string
+	GitBranch              string
+	HasGitRemote           bool
+	HasEnvExample          bool
+	HasEnvFile             bool
 }

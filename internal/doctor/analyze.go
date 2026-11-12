@@ -18,11 +18,15 @@ func Analyze(root, command, output string) []Diagnosis {
 	cmd, out := strings.ToLower(command), strings.ToLower(output)
 	var found []Diagnosis
 	if (strings.Contains(out, "enoent") && strings.Contains(out, "node_modules")) || (strings.Contains(out, "cannot find module") && strings.Contains(cmd, "npm")) {
-		pm := p.PackageManager
-		if pm == "" {
-			pm = "npm"
+		if p.PackageManagerConflict != "" {
+			found = append(found, Diagnosis{"Node.js package manager is ambiguous", p.PackageManagerConflict + ". RepoDoctor will not guess which install command to run. Keep one lockfile or declare the intended package manager in package.json.", "", "Manual review required", true})
+		} else {
+			pm := p.PackageManager
+			if pm == "" {
+				pm = "npm"
+			}
+			found = append(found, Diagnosis{"Node.js dependencies are missing", "The repository appears to be missing installed Node.js dependencies.", pm + " install", "Safe after confirmation", false})
 		}
-		found = append(found, Diagnosis{"Node.js dependencies are missing", "The repository appears to be missing installed Node.js dependencies.", pm + " install", "Safe after confirmation", false})
 	}
 	if m := unknownScript.FindStringSubmatch(output); len(m) == 2 {
 		available := make([]string, 0, len(p.NPMScripts))
