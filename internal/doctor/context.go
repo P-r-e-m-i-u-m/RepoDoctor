@@ -16,22 +16,48 @@ var makeTarget = regexp.MustCompile("^([A-Za-z0-9_.-]+):")
 func inspectProjectFiles(root string) Project {
 	p := Project{NPMScripts: map[string]bool{}, Requirements: map[string]bool{}}
 	exists := func(name string) bool { _, err := os.Stat(filepath.Join(root, name)); return err == nil }
+	lockfileManagers := make([]string, 0, 3)
 	if exists("pnpm-lock.yaml") {
-		p.PackageManager = "pnpm"
-	} else if exists("yarn.lock") {
-		p.PackageManager = "yarn"
-	} else if exists("package-lock.json") {
-		p.PackageManager = "npm"
+		lockfileManagers = append(lockfileManagers, "pnpm")
+	}
+	if exists("yarn.lock") {
+		lockfileManagers = append(lockfileManagers, "yarn")
+	}
+	if exists("package-lock.json") {
+		lockfileManagers = append(lockfileManagers, "npm")
+	}
+	if p.PackageManagerConflict == "" {
+		if p.PackageManager != "" {
+			for _, manager := range lockfileManagers {
+				if manager != p.PackageManager {
+					p.PackageManagerConflict = "package.json declares " + p.PackageManager + " but the repository also contains a " + manager + " lockfile"
+					break
+				}
+			}
+		} else if len(lockfileManagers) == 1 {
+			p.PackageManager = lockfileManagers[0]
+		} else if len(lockfileManagers) > 1 {
+			p.PackageManagerConflict = "multiple package-manager lockfiles are present (" + strings.Join(lockfileManagers, ", ") + ") and package.json does not declare packageManager"
+		}
 	}
 	p.HasNodeModules = exists("node_modules")
 	if data, err := os.ReadFile(filepath.Join(root, "package.json")); err == nil {
 		p.HasPackageJSON = true
 		var manifest struct {
-			Scripts map[string]json.RawMessage `json:"scripts"`
+			Scripts       map[string]json.RawMessage `json:"scripts"`
+			PackageManager string                    `json:"packageManager"`
 		}
 		if json.Unmarshal(data, &manifest) == nil {
 			for name := range manifest.Scripts {
 				p.NPMScripts[name] = true
+			}
+			if manifest.PackageManager != "" {
+				manager := strings.SplitN(manifest.PackageManager, "@", 2)[0]
+				if manager == "npm" || manager == "pnpm" || manager == "yarn" {
+					p.PackageManager = manager
+				} else {
+					p.PackageManagerConflict = "package.json declares an unsupported packageManager value: " + manifest.PackageManager
+				}
 			}
 		}
 	}
