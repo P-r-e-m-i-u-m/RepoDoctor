@@ -31,7 +31,7 @@ func inspectProjectFiles(root string) Project {
 		p.HasPackageJSON = true
 		var manifest struct {
 			Scripts        map[string]json.RawMessage `json:"scripts"`
-			PackageManager string                    `json:"packageManager"`
+			PackageManager string                     `json:"packageManager"`
 		}
 		if json.Unmarshal(data, &manifest) == nil {
 			for name := range manifest.Scripts {
